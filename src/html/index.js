@@ -51,3 +51,65 @@ let lessons_list = [
     "Bài 29. Thi cuối khóa và bảo vệ Case Study",
     "Bài 30. Tổng kết"
 ];
+
+let NGAY_KHAI_GIANG = get_start_date();
+let current = new Date(NGAY_KHAI_GIANG);
+
+const LEARNING_DAYS = [TUE, THU, SAT];
+const get_date_string = (date) => date.toISOString().substring(0, 10);
+const get_next_date = (date) => date.getDate() + 1;
+
+const get_schedule = lesson => {
+    let day = -1, not_learning_day = true, is_day_off = true, date_string = "";
+
+    while (not_learning_day || is_day_off) {
+        current.setDate(get_next_date(current));
+        date_string = get_date_string(current);
+        day = current.getDay();
+        not_learning_day = !LEARNING_DAYS.includes(day);
+        is_day_off = HOLIDAY_LIST.includes(date_string) || DAY_OFF_LIST.includes(date_string);
+    }
+    return {
+        day: DAY_STR[day],
+        lesson,
+        date: get_date_string(current)
+    };
+};
+
+let learning_schedule = [
+    {
+        day: DAY_STR[current.getDay()],
+        lesson: lessons_list[0],
+        date: get_date_string(current)
+    },
+    ...lessons_list.slice(1).map(get_schedule)
+];
+
+function display_schedule() {
+    
+   let result="";
+    for(var i=0; i<learning_schedule.length; i++) {
+        
+        // template string
+        result += `<tr>
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50">
+                ${i + 1}
+            </th>
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                ${learning_schedule[i].day}
+            </th>
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                ${learning_schedule[i].date}
+            </th>
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                ${learning_schedule[i].lesson}
+            </th>
+        </tr>
+        `;
+        // result +="<tr>"+"<td>" + learning_schedule[i].day.toString() + "</td>" + "<td>" + learning_schedule[i].lesson.toString() + "</td>" + "<td>" + learning_schedule[i].date.toString() +
+        //         "</td>";   
+
+    }
+    console.log(result);
+    document.getElementById("schedule").innerHTML = result;
+};
